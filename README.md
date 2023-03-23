@@ -2,9 +2,8 @@
 
 This app is totally built on Kotlin with the integration of Open Weather Map.
 
-
-https://user-images.githubusercontent.com/107570247/227212466-87277e5c-0759-449b-8b91-22579ed7e21e.mp4
-
+##Demo
+![weather app](https://user-images.githubusercontent.com/107570247/227214358-b92f4f48-6dd3-42fa-85b6-2d461373bbdb.gif)
 
 ## Features and Fuctionality
  - Get current location weather.
