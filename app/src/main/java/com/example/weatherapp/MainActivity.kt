@@ -4,16 +4,19 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import com.example.weatherapp.dataClasses.ModelClass
 import com.example.weatherapp.dataClasses.Utilities.ApiUtilities
@@ -23,6 +26,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZoneId
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -39,6 +44,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var humidity: TextView
     private lateinit var pressure: TextView
     private lateinit var city: TextView
+    private lateinit var sunrise: TextView
+    private lateinit var sunset: TextView
     private lateinit var bgImage: ImageView
     private lateinit var citySearch: EditText
     val API: String = "1472fe708df6d7d4cf2c5ff997a78262"
@@ -58,6 +65,8 @@ class MainActivity : AppCompatActivity() {
         humidity = findViewById(R.id.humidity)
         pressure = findViewById(R.id.pressure)
         city = findViewById(R.id.city)
+        sunrise = findViewById(R.id.sunrise)
+        sunset = findViewById(R.id.sunset)
         citySearch = findViewById(R.id.search)
         bgImage = findViewById(R.id.bg_image)
 
@@ -87,6 +96,8 @@ class MainActivity : AppCompatActivity() {
         windspeed.text = getShared.getString("windSpeed","")
         pressure.text = getShared.getString("pressure","")
         city.text = getShared.getString("city","")
+        sunrise.text = getShared.getString("sunrise","")
+        sunset.text = getShared.getString("sunset","")
         findViewById<TextView>(R.id.singaporeTemp).text =getShared.getString("singaporeTemp","")
         findViewById<TextView>(R.id.sydneyTemp).text =getShared.getString("sydneyTemp","")
         findViewById<TextView>(R.id.mumbaiTemp).text =getShared.getString("mumbaiTemp","")
@@ -98,31 +109,43 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateUI(type: String?) {
-        if(type == "Thunderstorm")
+        if(type == "Thunderstorm") {
             bgImage.setImageResource(R.drawable.thunder_bg)
-        else if (type == "Drizzle")
+        }
+        else if (type == "Drizzle") {
             bgImage.setImageResource(R.drawable.drizzle_bg)
-        else if (type == "Rain")
+        }
+        else if (type == "Rain") {
             bgImage.setImageResource(R.drawable.rain_bg)
-        else if (type == "Snow")
+        }
+        else if (type == "Snow"){
             bgImage.setImageResource(R.drawable.snow_bg)
-        else if (type == "Clear")
+        }
+        else if (type == "Clear") {
             bgImage.setImageResource(R.drawable.clear_bg)
-        else if (type == "Clouds")
+        }
+        else if (type == "Clouds") {
             bgImage.setImageResource(R.drawable.cloudy_bg)
-        else if (type == "Haze" || type == "Smoke")
+        }
+        else if (type == "Haze" || type == "Smoke") {
             bgImage.setImageResource(R.drawable.haze_bg)
-        else
+        }
+        else {
             bgImage.setImageResource(R.drawable.weather_bg)
+            bgImage.animation = AnimationUtils.loadAnimation(this,R.anim.bg_image_animation)
+        }
     }
 
     private fun getCityWeather(cityName: String) {
         ApiUtilities.getAPIInterface()?.getCityWeatherData(cityName, API, "metric")?.enqueue(
             object: Callback<ModelClass>{
+                @RequiresApi(Build.VERSION_CODES.O)
                 override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
                     if(response.isSuccessful){
                         setDataOnViews(response.body())
                     }
+                    else
+                        Toast.makeText(applicationContext, "Weather for this city doesn't exist",Toast.LENGTH_SHORT).show()
                 }
                 override fun onFailure(call: Call<ModelClass>, t: Throwable) {
                     Toast.makeText(applicationContext, "Not a valid city name",Toast.LENGTH_SHORT).show()
@@ -238,6 +261,15 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun timeStampToLocalTime(timeStamp: Long): String{
+        val localTime = timeStamp.let {
+            Instant.ofEpochSecond(it).atZone(ZoneId.systemDefault()).toLocalTime()
+        }
+        return localTime.toString()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setDataOnViews(body: ModelClass?) {
 
         getMumbaiWeather()
@@ -260,6 +292,8 @@ class MainActivity : AppCompatActivity() {
         pref.putString("windSpeed","${body.wind.speed.toString()} km/hr")
         pref.putString("pressure","${body.main.pressure.toString()} mBar")
         pref.putString("city",body.name.toString())
+        pref.putString("sunrise",timeStampToLocalTime(body.sys.sunrise.toLong()))
+        pref.putString("sunset",timeStampToLocalTime(body.sys.sunset.toLong()))
         pref.apply()
 
         val getShared = this.getSharedPreferences("PREFS", Context.MODE_PRIVATE)
@@ -274,12 +308,16 @@ class MainActivity : AppCompatActivity() {
         windspeed.text = getShared.getString("windSpeed","")
         pressure.text = getShared.getString("pressure","")
         city.text = getShared.getString("city","")
+        sunrise.text = getShared.getString("sunrise","")
+        sunset.text = getShared.getString("sunset","")
         updateUI(getShared.getString("type",""))
+        bgImage.animation = AnimationUtils.loadAnimation(this,R.anim.bg_image_animation)
     }
 
     private fun fetchCurrentLocationWeather(latitude: String, longitude: String){
         ApiUtilities.getAPIInterface()?.getCurrentWeatherData(latitude,longitude,API,"metric","en")?.enqueue(
             object: Callback<ModelClass>{
+                @RequiresApi(Build.VERSION_CODES.O)
                 override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
                     if(response.isSuccessful){
                         setDataOnViews(response.body())
