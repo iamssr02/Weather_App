@@ -75,10 +75,17 @@ class MainActivity : AppCompatActivity() {
                 true
             } else false
         }
+
+        getMumbaiWeather()
+        getDelhiWeather()
+        getMelbourneWeather()
+        getSingaporeWeather()
+        getSydneyWeather()
+        getNewYorkWeather()
     }
 
     private fun getCityWeather(cityName: String) {
-        ApiUtilities.getAPIInterface()?.getCityWeatherData(cityName, API)?.enqueue(
+        ApiUtilities.getAPIInterface()?.getCityWeatherData(cityName, API, "metric")?.enqueue(
             object: Callback<ModelClass>{
                 override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
                     if(response.isSuccessful){
@@ -88,7 +95,90 @@ class MainActivity : AppCompatActivity() {
                 override fun onFailure(call: Call<ModelClass>, t: Throwable) {
                     Toast.makeText(applicationContext, "Not a valid city name",Toast.LENGTH_SHORT).show()
                 }
+            })
+    }
 
+    private fun getMumbaiWeather() {
+        ApiUtilities.getAPIInterface()?.getCityWeatherData("Mumbai", API, "metric")?.enqueue(
+            object: Callback<ModelClass>{
+                override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
+                    if(response.isSuccessful){
+                        findViewById<TextView>(R.id.mumbaiTemp).text ="${response.body()!!.main.temp.roundToInt()}°C"
+                    }
+                }
+                override fun onFailure(call: Call<ModelClass>, t: Throwable) {
+                    Toast.makeText(applicationContext, "Not a valid city name",Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun getNewYorkWeather() {
+        ApiUtilities.getAPIInterface()?.getCityWeatherData("New York", API, "metric")?.enqueue(
+            object: Callback<ModelClass>{
+                override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
+                    if(response.isSuccessful){
+                        findViewById<TextView>(R.id.newYorkTemp).text ="${response.body()!!.main.temp.roundToInt()}°C"
+                    }
+                }
+                override fun onFailure(call: Call<ModelClass>, t: Throwable) {
+                    Toast.makeText(applicationContext, "Not a valid city name",Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun getDelhiWeather() {
+        ApiUtilities.getAPIInterface()?.getCityWeatherData("Delhi", API, "metric")?.enqueue(
+            object: Callback<ModelClass>{
+                override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
+                    if(response.isSuccessful){
+                        findViewById<TextView>(R.id.delhiTemp).text ="${response.body()!!.main.temp.roundToInt()}°C"
+                    }
+                }
+                override fun onFailure(call: Call<ModelClass>, t: Throwable) {
+                    Toast.makeText(applicationContext, "Not a valid city name",Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun getSydneyWeather() {
+        ApiUtilities.getAPIInterface()?.getCityWeatherData("Sydney", API, "metric")?.enqueue(
+            object: Callback<ModelClass>{
+                override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
+                    if(response.isSuccessful){
+                        findViewById<TextView>(R.id.sydneyTemp).text ="${response.body()!!.main.temp.roundToInt()}°C"
+                    }
+                }
+                override fun onFailure(call: Call<ModelClass>, t: Throwable) {
+                    Toast.makeText(applicationContext, "Not a valid city name",Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun getSingaporeWeather() {
+        ApiUtilities.getAPIInterface()?.getCityWeatherData("Singapore", API, "metric")?.enqueue(
+            object: Callback<ModelClass>{
+                override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
+                    if(response.isSuccessful){
+                        findViewById<TextView>(R.id.singaporeTemp).text ="${response.body()!!.main.temp.roundToInt()}°C"
+                    }
+                }
+                override fun onFailure(call: Call<ModelClass>, t: Throwable) {
+                    Toast.makeText(applicationContext, "Not a valid city name",Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun getMelbourneWeather() {
+        ApiUtilities.getAPIInterface()?.getCityWeatherData("Melbourne", API, "metric")?.enqueue(
+            object: Callback<ModelClass>{
+                override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
+                    if(response.isSuccessful){
+                        findViewById<TextView>(R.id.melbourneTemp).text ="${response.body()!!.main.temp.roundToInt()}°C"
+                    }
+                }
+                override fun onFailure(call: Call<ModelClass>, t: Throwable) {
+                    Toast.makeText(applicationContext, "Not a valid city name",Toast.LENGTH_SHORT).show()
+                }
             })
     }
 
@@ -96,19 +186,19 @@ class MainActivity : AppCompatActivity() {
         val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm")
         val currentDate = sdf.format(Date())
         date.text = "Last updated on: $currentDate"
-        maxTemp.text="${body!!.main.temp_max}°C/"
-        minTemp.text="${body!!.main.temp_min}°C"
-        temp.text = "${body!!.main.temp}°C"
-        feelsLike.text = "Real feel: ${body!!.main.feels_like}°C"
+        maxTemp.text="${body!!.main.temp_max.roundToInt()}°C/"
+        minTemp.text="${body!!.main.temp_min.roundToInt()}°C"
+        temp.text = "${body!!.main.temp.roundToInt()}°C"
+        feelsLike.text = "Feels like ${body!!.main.feels_like.roundToInt()}°C"
         type.text = "${body!!.weather[0].main}"
         humidity.text = "${body.main.humidity.toString()}%"
-        windspeed.text = body.wind.speed.toString()
-        pressure.text = body.main.pressure.toString()
+        windspeed.text = "${body.wind.speed.toString()} km/hr"
+        pressure.text = "${body.main.pressure.toString()} mBar"
         city.text = body.name.toString()
     }
 
     private fun fetchCurrentLocationWeather(latitude: String, longitude: String){
-        ApiUtilities.getAPIInterface()?.getCurrentWeatherData(latitude,longitude,API)?.enqueue(
+        ApiUtilities.getAPIInterface()?.getCurrentWeatherData(latitude,longitude,API,"metric","en")?.enqueue(
             object: Callback<ModelClass>{
                 override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
                     if(response.isSuccessful){

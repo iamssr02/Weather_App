@@ -10,12 +10,15 @@ interface ApiInterface {
     fun getCurrentWeatherData(
         @Query("lat") latitude: String,
         @Query("lon") longitude: String,
-        @Query("APPID") api_key: String
+        @Query("APPID") api_key: String,
+        @Query("units") units: String,
+        @Query("lang") lang: String
     ):Call<ModelClass>
 
     @GET("weather")
     fun getCityWeatherData(
-        @Query("q") latitude: String,
-        @Query("APPID") api_key: String
+        @Query("q") cityName: String,
+        @Query("APPID") api_key: String,
+        @Query("units") units: String
     ):Call<ModelClass>
 }

@@ -66,7 +66,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto"
-            android:text="Kolkata"
+            android:text=""
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="@dimen/_20ssp"
@@ -76,7 +76,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto"
-        android:text="Last updated on: 23/3/23"
+        android:text="Last updated on: "
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="@dimen/_13ssp" />
@@ -97,7 +97,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto"
-            android:text="27°C"
+            android:text=""
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="@dimen/_60ssp"
@@ -115,10 +115,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:fontFamily="@font/roboto"
-                android:text="Clear"
+                android:text=""
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_20ssp"
+                android:textSize="@dimen/_15ssp"
                 android:textStyle="bold" />
 
             <TextView
@@ -126,24 +126,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_5sdp"
                 android:fontFamily="@font/roboto"
-                android:text="33"
+                android:text=""
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_20ssp"
+                android:textSize="@dimen/_15ssp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/min_temp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
                 android:fontFamily="@font/roboto"
-                android:text="21"
+                android:text=""
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_20ssp"
+                android:textSize="@dimen/_15ssp"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -155,7 +153,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto"
-        android:text="Real feel: 18"
+        android:text="Feels like"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="@dimen/_20ssp"
@@ -211,7 +209,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/roboto"
-                    android:text="10 kmph"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13ssp" />
 
@@ -255,7 +253,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/roboto"
-                    android:text="50%"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13ssp" />
 
@@ -298,7 +296,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/roboto"
-                    android:text="1007bar"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13ssp" />
 
@@ -350,7 +348,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:fontFamily="@font/roboto"
-                    android:text="Wind"
+                    android:text=""
                     android:textAlignment="textEnd"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_15ssp"
@@ -384,7 +382,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:fontFamily="@font/roboto"
-                    android:text="Wind"
+                    android:text=""
                     android:textAlignment="textEnd"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_15ssp"
@@ -418,7 +416,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:fontFamily="@font/roboto"
-                    android:text="Wind"
+                    android:text=""
                     android:textAlignment="textEnd"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_15ssp"
@@ -460,7 +458,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:fontFamily="@font/roboto"
-                    android:text="Wind"
+                    android:text=""
                     android:textAlignment="textEnd"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_15ssp"
@@ -494,7 +492,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:fontFamily="@font/roboto"
-                    android:text="Wind"
+                    android:text=""
                     android:textAlignment="textEnd"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_15ssp"
@@ -528,7 +526,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:fontFamily="@font/roboto"
-                    android:text="Wind"
+                    android:text=""
                     android:textAlignment="textEnd"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_15ssp"
