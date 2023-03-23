@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
@@ -12,6 +11,7 @@ import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -19,11 +19,9 @@ import com.example.weatherapp.dataClasses.ModelClass
 import com.example.weatherapp.dataClasses.Utilities.ApiUtilities
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
@@ -41,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var humidity: TextView
     private lateinit var pressure: TextView
     private lateinit var city: TextView
+    private lateinit var bgImage: ImageView
     private lateinit var citySearch: EditText
     val API: String = "1472fe708df6d7d4cf2c5ff997a78262"
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +48,6 @@ class MainActivity : AppCompatActivity() {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
-        getCurrentLocation()
         date=findViewById(R.id.date)
         temp=findViewById(R.id.temp)
         minTemp=findViewById(R.id.min_temp)
@@ -61,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         pressure = findViewById(R.id.pressure)
         city = findViewById(R.id.city)
         citySearch = findViewById(R.id.search)
+        bgImage = findViewById(R.id.bg_image)
 
         citySearch.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -75,13 +74,46 @@ class MainActivity : AppCompatActivity() {
                 true
             } else false
         }
+        val getShared = this.getSharedPreferences("PREFS", Context.MODE_PRIVATE)
 
-        getMumbaiWeather()
-        getDelhiWeather()
-        getMelbourneWeather()
-        getSingaporeWeather()
-        getSydneyWeather()
-        getNewYorkWeather()
+        //get data when offline
+        date.text = getShared.getString("date","")
+        maxTemp.text = getShared.getString("maxTemp","")
+        minTemp.text = getShared.getString("minTemp","")
+        temp.text = getShared.getString("temp","")
+        feelsLike.text = getShared.getString("feelsLike","")
+        type.text = getShared.getString("type","")
+        humidity.text = getShared.getString("humidity","")
+        windspeed.text = getShared.getString("windSpeed","")
+        pressure.text = getShared.getString("pressure","")
+        city.text = getShared.getString("city","")
+        findViewById<TextView>(R.id.singaporeTemp).text =getShared.getString("singaporeTemp","")
+        findViewById<TextView>(R.id.sydneyTemp).text =getShared.getString("sydneyTemp","")
+        findViewById<TextView>(R.id.mumbaiTemp).text =getShared.getString("mumbaiTemp","")
+        findViewById<TextView>(R.id.delhiTemp).text =getShared.getString("delhiTemp","")
+        findViewById<TextView>(R.id.newYorkTemp).text =getShared.getString("newYorkTemp","")
+        findViewById<TextView>(R.id.melbourneTemp).text =getShared.getString("melbourneTemp","")
+        updateUI(getShared.getString("type",""))
+        getCurrentLocation()
+    }
+
+    private fun updateUI(type: String?) {
+        if(type == "Thunderstorm")
+            bgImage.setImageResource(R.drawable.thunder_bg)
+        else if (type == "Drizzle")
+            bgImage.setImageResource(R.drawable.drizzle_bg)
+        else if (type == "Rain")
+            bgImage.setImageResource(R.drawable.rain_bg)
+        else if (type == "Snow")
+            bgImage.setImageResource(R.drawable.snow_bg)
+        else if (type == "Clear")
+            bgImage.setImageResource(R.drawable.clear_bg)
+        else if (type == "Clouds")
+            bgImage.setImageResource(R.drawable.cloudy_bg)
+        else if (type == "Haze" || type == "Smoke")
+            bgImage.setImageResource(R.drawable.haze_bg)
+        else
+            bgImage.setImageResource(R.drawable.weather_bg)
     }
 
     private fun getCityWeather(cityName: String) {
@@ -103,7 +135,11 @@ class MainActivity : AppCompatActivity() {
             object: Callback<ModelClass>{
                 override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
                     if(response.isSuccessful){
-                        findViewById<TextView>(R.id.mumbaiTemp).text ="${response.body()!!.main.temp.roundToInt()}°C"
+                        val pref = applicationContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
+                        pref.putString("mumbaiTemp","${response.body()!!.main.temp.roundToInt()}°C")
+                        pref.apply()
+                        val getShared = applicationContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE)
+                        findViewById<TextView>(R.id.mumbaiTemp).text =getShared.getString("mumbaiTemp","")
                     }
                 }
                 override fun onFailure(call: Call<ModelClass>, t: Throwable) {
@@ -117,7 +153,11 @@ class MainActivity : AppCompatActivity() {
             object: Callback<ModelClass>{
                 override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
                     if(response.isSuccessful){
-                        findViewById<TextView>(R.id.newYorkTemp).text ="${response.body()!!.main.temp.roundToInt()}°C"
+                        val pref = applicationContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
+                        pref.putString("newYorkTemp","${response.body()!!.main.temp.roundToInt()}°C")
+                        pref.apply()
+                        val getShared = applicationContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE)
+                        findViewById<TextView>(R.id.newYorkTemp).text =getShared.getString("newYorkTemp","")
                     }
                 }
                 override fun onFailure(call: Call<ModelClass>, t: Throwable) {
@@ -131,7 +171,11 @@ class MainActivity : AppCompatActivity() {
             object: Callback<ModelClass>{
                 override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
                     if(response.isSuccessful){
-                        findViewById<TextView>(R.id.delhiTemp).text ="${response.body()!!.main.temp.roundToInt()}°C"
+                        val pref = applicationContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
+                        pref.putString("delhiTemp","${response.body()!!.main.temp.roundToInt()}°C")
+                        pref.apply()
+                        val getShared = applicationContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE)
+                        findViewById<TextView>(R.id.delhiTemp).text =getShared.getString("delhiTemp","")
                     }
                 }
                 override fun onFailure(call: Call<ModelClass>, t: Throwable) {
@@ -145,7 +189,11 @@ class MainActivity : AppCompatActivity() {
             object: Callback<ModelClass>{
                 override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
                     if(response.isSuccessful){
-                        findViewById<TextView>(R.id.sydneyTemp).text ="${response.body()!!.main.temp.roundToInt()}°C"
+                        val pref = applicationContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
+                        pref.putString("sydneyTemp","${response.body()!!.main.temp.roundToInt()}°C")
+                        pref.apply()
+                        val getShared = applicationContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE)
+                        findViewById<TextView>(R.id.sydneyTemp).text =getShared.getString("sydneyTemp","")
                     }
                 }
                 override fun onFailure(call: Call<ModelClass>, t: Throwable) {
@@ -159,7 +207,11 @@ class MainActivity : AppCompatActivity() {
             object: Callback<ModelClass>{
                 override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
                     if(response.isSuccessful){
-                        findViewById<TextView>(R.id.singaporeTemp).text ="${response.body()!!.main.temp.roundToInt()}°C"
+                        val pref = applicationContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
+                        pref.putString("singaporeTemp","${response.body()!!.main.temp.roundToInt()}°C")
+                        pref.apply()
+                        val getShared = applicationContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE)
+                        findViewById<TextView>(R.id.singaporeTemp).text =getShared.getString("singaporeTemp","")
                     }
                 }
                 override fun onFailure(call: Call<ModelClass>, t: Throwable) {
@@ -173,7 +225,11 @@ class MainActivity : AppCompatActivity() {
             object: Callback<ModelClass>{
                 override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
                     if(response.isSuccessful){
-                        findViewById<TextView>(R.id.melbourneTemp).text ="${response.body()!!.main.temp.roundToInt()}°C"
+                        val pref = applicationContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
+                        pref.putString("melbourneTemp","${response.body()!!.main.temp.roundToInt()}°C")
+                        pref.apply()
+                        val getShared = applicationContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE)
+                        findViewById<TextView>(R.id.melbourneTemp).text =getShared.getString("melbourneTemp","")
                     }
                 }
                 override fun onFailure(call: Call<ModelClass>, t: Throwable) {
@@ -183,18 +239,42 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDataOnViews(body: ModelClass?) {
+
+        getMumbaiWeather()
+        getDelhiWeather()
+        getMelbourneWeather()
+        getSingaporeWeather()
+        getSydneyWeather()
+        getNewYorkWeather()
+
+        val pref = this.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
         val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm")
         val currentDate = sdf.format(Date())
-        date.text = "Last updated on: $currentDate"
-        maxTemp.text="${body!!.main.temp_max.roundToInt()}°C/"
-        minTemp.text="${body!!.main.temp_min.roundToInt()}°C"
-        temp.text = "${body!!.main.temp.roundToInt()}°C"
-        feelsLike.text = "Feels like ${body!!.main.feels_like.roundToInt()}°C"
-        type.text = "${body!!.weather[0].main}"
-        humidity.text = "${body.main.humidity.toString()}%"
-        windspeed.text = "${body.wind.speed.toString()} km/hr"
-        pressure.text = "${body.main.pressure.toString()} mBar"
-        city.text = body.name.toString()
+        pref.putString("date","Last updated on: $currentDate")
+        pref.putString("maxTemp","${body!!.main.temp_max.roundToInt()}°C/")
+        pref.putString("minTemp","${body!!.main.temp_min.roundToInt()}°C")
+        pref.putString("temp","${body!!.main.temp.roundToInt()}°C")
+        pref.putString("feelsLike","Feels like ${body!!.main.feels_like.roundToInt()}°C")
+        pref.putString("type", body!!.weather[0].main)
+        pref.putString("humidity","${body.main.humidity.toString()}%")
+        pref.putString("windSpeed","${body.wind.speed.toString()} km/hr")
+        pref.putString("pressure","${body.main.pressure.toString()} mBar")
+        pref.putString("city",body.name.toString())
+        pref.apply()
+
+        val getShared = this.getSharedPreferences("PREFS", Context.MODE_PRIVATE)
+
+        date.text = getShared.getString("date","")
+        maxTemp.text = getShared.getString("maxTemp","")
+        minTemp.text = getShared.getString("minTemp","")
+        temp.text = getShared.getString("temp","")
+        feelsLike.text = getShared.getString("feelsLike","")
+        type.text = getShared.getString("type","")
+        humidity.text = getShared.getString("humidity","")
+        windspeed.text = getShared.getString("windSpeed","")
+        pressure.text = getShared.getString("pressure","")
+        city.text = getShared.getString("city","")
+        updateUI(getShared.getString("type",""))
     }
 
     private fun fetchCurrentLocationWeather(latitude: String, longitude: String){
@@ -207,7 +287,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<ModelClass>, t: Throwable) {
-                    Toast.makeText(applicationContext, "Error occurred",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(applicationContext, "Error occurred while fetching weather",Toast.LENGTH_SHORT).show()
                 }
 
             })
