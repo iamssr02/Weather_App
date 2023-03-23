@@ -9,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -37,6 +40,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var windspeed: TextView
     private lateinit var humidity: TextView
     private lateinit var pressure: TextView
+    private lateinit var city: TextView
+    private lateinit var citySearch: EditText
     val API: String = "1472fe708df6d7d4cf2c5ff997a78262"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,12 +59,41 @@ class MainActivity : AppCompatActivity() {
         windspeed = findViewById(R.id.wind)
         humidity = findViewById(R.id.humidity)
         pressure = findViewById(R.id.pressure)
+        city = findViewById(R.id.city)
+        citySearch = findViewById(R.id.search)
 
+        citySearch.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                getCityWeather(citySearch.text.toString())
+                val view = this.currentFocus
+                if (view != null) {
+                    val imm: InputMethodManager =
+                        getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                    citySearch.clearFocus()
+                }
+                true
+            } else false
+        }
+    }
 
+    private fun getCityWeather(cityName: String) {
+        ApiUtilities.getAPIInterface()?.getCityWeatherData(cityName, API)?.enqueue(
+            object: Callback<ModelClass>{
+                override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
+                    if(response.isSuccessful){
+                        setDataOnViews(response.body())
+                    }
+                }
+                override fun onFailure(call: Call<ModelClass>, t: Throwable) {
+                    Toast.makeText(applicationContext, "Not a valid city name",Toast.LENGTH_SHORT).show()
+                }
+
+            })
     }
 
     private fun setDataOnViews(body: ModelClass?) {
-        val sdf = SimpleDateFormat("dd/mm/yy hh:mm")
+        val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm")
         val currentDate = sdf.format(Date())
         date.text = "Last updated on: $currentDate"
         maxTemp.text="${body!!.main.temp_max}°C/"
@@ -67,9 +101,10 @@ class MainActivity : AppCompatActivity() {
         temp.text = "${body!!.main.temp}°C"
         feelsLike.text = "Real feel: ${body!!.main.feels_like}°C"
         type.text = "${body!!.weather[0].main}"
-        humidity.text = body.main.humidity.toString()
+        humidity.text = "${body.main.humidity.toString()}%"
         windspeed.text = body.wind.speed.toString()
         pressure.text = body.main.pressure.toString()
+        city.text = body.name.toString()
     }
 
     private fun fetchCurrentLocationWeather(latitude: String, longitude: String){
@@ -82,7 +117,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<ModelClass>, t: Throwable) {
-
+                    Toast.makeText(applicationContext, "Error occurred",Toast.LENGTH_SHORT).show()
                 }
 
             })
